@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+        <h1>Register new user</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{form|crispy}}
+
+        <input class="btn btn-success" type="submit" value="Register">
+        <a class="btn btn-light" href="{% url 'core:index' %}">Home</a>
+    </form>
+{% endblock %}
