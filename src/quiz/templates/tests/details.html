@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{{ test }}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Quiz info</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Description</td>
+                        <td>{{ test.description }}</td>
+                      </tr>
+                      <tr>
+                        <td>Num of questions</td>
+                        <td>{{ test.questions_count }}</td>
+                      </tr>
+                      <tr>
+                        <td>Num of runs</td>
+                        <td>{{ test.results.count }}</td>
+                      </tr>
+                      <tr>
+                        <td>Best result</td>
+                        <td>{{ test.get_best_result }} </td>
+                      </tr>
+                      <tr>
+                        <td>User who scored best result</td>
+                        <td>N/A</td>
+                      </tr>
+                      <tr>
+                        <td>Last run</td>
+                        <td>N/A</td>
+                      </tr>
+                    </tbody>
+                  </table>
+            </div>
+            <div class="col-sm">
+                <div class="d-flex justify-content-center">
+                    <img class="rounded-circle p-1 m-1" width="350" height="350"  src="{{ test.image.url }}">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

@@ -3,8 +3,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from accounts.models import User
 
 # Create your models here.
+from core.models import BaseModel
+from core.utils import generate_uuid
 
-class Test(models.Model):
+
+class Test(BaseModel):
     QUESTION_MIN_LIMIT = 3
     QUESTION_MAX_LIMIT = 20
 
@@ -14,10 +17,17 @@ class Test(models.Model):
         ADVANCED = 2, "Advanced"
 
     # topic = models.ForeignKey(to=Topic, related_name='tests', null=True, on_delete=models.SET_NULL)
+    uuid = models.UUIDField(default=generate_uuid, db_index=True, unique=True)
     title = models.CharField(max_length=64)
     description = models.TextField(max_length=1024, null=True, blank=True)
     level = models.PositiveSmallIntegerField(choices=LEVEL_CHOICES.choices, default=LEVEL_CHOICES.MIDDLE)
     image = models.ImageField(default='default.png', upload_to='covers')
+
+    def questions_count(self):
+        return self.questions.count()
+
+    def get_best_result(self):
+        return 42
 
     def __str__(self):
         return f'{self.title}'
@@ -29,8 +39,7 @@ class Question(models.Model):
 
     test = models.ForeignKey(to=Test, related_name='questions', on_delete=models.CASCADE)
     order_number = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(Test.QUESTION_MIN_LIMIT),
-                    MaxValueValidator(Test.QUESTION_MAX_LIMIT)])
+        validators=[MaxValueValidator(Test.QUESTION_MAX_LIMIT)])
     text = models.CharField(max_length=64)
 
     def __str__(self):
@@ -46,7 +55,7 @@ class Choice(models.Model):
         return f'{self.text}'
 
 
-class Result(models.Model):
+class Result(models.Model): # BaseModel
     class STATE(models.IntegerChoices):
         NEW = 0, "New"
         FINISHED = 1, "Finished"
