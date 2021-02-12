@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>What is the answer for {{ question.text }}?</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{choices.management_form}}
+
+            <div class="border-buttom mb-3">
+                Please, select one of the possible choices below:
+            </div>
+
+            {% for form in choices %}
+
+                <div class="mt-1">
+
+                    {{ form.is_selected }} <label for="{{ form.is_selected.id_for_label }}"> {{ form.text.value }}</label>
+
+                </div>
+
+            {% endfor %}
+
+            <button type="submit" class="btn btn-success">Next</button>
+        </form>
+
+    </div>
+
+{% endblock %}

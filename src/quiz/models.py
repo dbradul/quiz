@@ -48,14 +48,14 @@ class Question(models.Model):
 
 class Choice(models.Model):
     text = models.CharField(max_length=64)
-    question = models.ForeignKey(to=Question, related_name='answers', on_delete=models.CASCADE)
+    question = models.ForeignKey(to=Question, related_name='choices', on_delete=models.CASCADE)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.text}'
 
 
-class Result(models.Model): # BaseModel
+class Result(BaseModel):
     class STATE(models.IntegerChoices):
         NEW = 0, "New"
         FINISHED = 1, "Finished"
@@ -63,7 +63,7 @@ class Result(models.Model): # BaseModel
     user = models.ForeignKey(to=User, related_name='results', on_delete=models.CASCADE)
     test = models.ForeignKey(to=Test, related_name='results', on_delete=models.CASCADE)
     state = models.PositiveSmallIntegerField(default=STATE.NEW, choices=STATE.choices)
-
+    uuid = models.UUIDField(default=generate_uuid, db_index=True, unique=True)
 
     num_correct_answers = models.PositiveSmallIntegerField(
         default=0,
@@ -77,3 +77,20 @@ class Result(models.Model): # BaseModel
             MaxValueValidator(Test.QUESTION_MAX_LIMIT)
         ]
     )
+
+    def update_result(self, order_number, question, selected_choices):
+        correct_choices = [
+            choice.is_correct
+            for choice in question.choices.all()
+        ]
+
+        correct_answer = True
+        for x, y in zip(correct_choices, selected_choices):
+            correct_answer &= (x == y)
+
+        self.num_correct_answers += int(correct_answer)
+        self.num_incorrect_answers += 1 - int(correct_answer)
+        if order_number == question.test.questions_count():
+            self.state = self.STATE.FINISHED
+
+        self.save()

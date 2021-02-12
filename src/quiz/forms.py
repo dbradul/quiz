@@ -1,5 +1,7 @@
 from django.core.exceptions import ValidationError
-from django.forms import BaseInlineFormSet
+from django.forms import BaseInlineFormSet, ModelForm, modelformset_factory
+from django import forms
+from quiz.models import Choice
 
 
 class QuestionsInlineFormSet(BaseInlineFormSet):
@@ -30,3 +32,17 @@ class ChoiceInlineFormSet(BaseInlineFormSet):
 
         if total_number == 0:
             raise ValidationError('At LEAST 1 choice should be selected')
+
+
+class ChoiceForm(ModelForm):
+    is_selected = forms.BooleanField(required=False)
+
+    class Meta:
+        model = Choice
+        fields = ['text']
+
+ChoiceFormSet = modelformset_factory(
+    model=Choice,
+    form=ChoiceForm,
+    extra=0
+)

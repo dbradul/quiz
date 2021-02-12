@@ -44,11 +44,16 @@
                     </tbody>
                   </table>
             </div>
+
             <div class="col-sm">
                 <div class="d-flex justify-content-center">
                     <img class="rounded-circle p-1 m-1" width="350" height="350"  src="{{ test.image.url }}">
                 </div>
 
+                <form action="{% url 'tests:result_create' test.uuid %}" method="post" class="d-flex justify-content-center mt-5 mb-5" >
+                    {% csrf_token %}
+                    <input type="submit" class="btn-lg btn-success" value="START ▶">
+                </form>
             </div>
 
         </div>

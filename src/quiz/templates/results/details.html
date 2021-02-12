@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <h1>Congratulaions!</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Result info for '{{ result.test }}'</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Started at</td>
+                        <td>{{ result.create_date }}</td>
+                      </tr>
+                      <tr>
+                        <td>Finished at</td>
+                        <td>{{ result.write_date }}</td>
+                      </tr>
+                      <tr>
+                        <td>User</td>
+                        <td>{{ result.user }}</td>
+                      </tr>
+                      <tr>
+                        <td>Score</td>
+                        <td>{{ result.num_correct_answers }} / {{ result.num_incorrect_answers }}</td>
+                      </tr>
+                      <tr>
+                        <td>Success rate</td>
+                        <td>N/A</td>
+                      </tr>
+                      <tr>
+                        <td>Time spent</td>
+                        <td>N/A</td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+            </div>
+
+            <div class="col-sm">
+                <div class="d-flex justify-content-center">
+                    <img class="rounded-circle p-1 m-1" width="350" height="350"  src="https://cdn3.iconfinder.com/data/icons/achievement-1/512/goal-success-achievement-05-512.png">
+                </div>
+
+{#                {% if test.has_unfinished_run %}#}
+{#                    <div class="d-flex justify-content-center mt-5 mb-5" >#}
+{#                            <a href="{% url 'tests:start' id=test.id %}" type="button" class="btn-lg btn-warning">CONTINUE ▶️</a>#}
+{#                    </div>#}
+{##}
+{#                    <form action="{% url 'tests:create_run' test.uuid %}" method="post" class="d-flex justify-content-center mt-5 mb-5" >#}
+{#                        {% csrf_token %}#}
+{#                        <input type="submit" class="btn-lg btn-success" value="START ▶">#}
+{#                        <div>#}
+{#                            <a href="{% url 'tests:start' id=test.id %}" type="button" class="btn-lg btn-success">START ▶️</a>#}
+{#                        </div>#}
+{##}
+{#                    </form>#}
+{##}
+{##}
+{#                {% else %}#}
+{#                    <form action="{% url 'tests:create_run' test.uuid %}" method="post" class="d-flex justify-content-center mt-5 mb-5" >#}
+{#                        {% csrf_token %}#}
+{#                        <input type="submit" class="btn-lg btn-success" value="START ▶">#}
+{#                        <div>#}
+{#                            <a href="{% url 'tests:start' id=test.id %}" type="button" class="btn-lg btn-success">START ▶️</a>#}
+{#                        </div>#}
+{##}
+{#                    </form>#}
+{#                {% endif %}#}
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
