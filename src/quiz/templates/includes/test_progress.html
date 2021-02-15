@@ -1,0 +1,7 @@
+{% load custom_tags %}
+
+{#{% with question.order_number|add:-1|div:question.test.questions_count|mult:100 as progress_level %}#}
+{% expr '((%1-1) / %2) * 100' question.order_number question.test.questions_count as progress_level %}
+<div class="progress">
+  <div class="progress-bar" role="progressbar" style="width: {{ progress_level }}%" aria-valuenow="{{ progress_level }}" aria-valuemin="0" aria-valuemax="100"></div>
+</div>

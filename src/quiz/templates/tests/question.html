@@ -1,14 +1,17 @@
 {% extends 'base.html' %}
+{% load custom_tags %}
 
 {% block header %}
     <h1>What is the answer for {{ question.text }}?</h1>
+    {% include 'includes/test_progress.html' %}
 {% endblock %}
 
 {% block content %}
 
+
     <div class="container">
 
-        <form method="post">
+        <form method="post" autocomplete="off">
             {% csrf_token %}
 
             {{choices.management_form}}

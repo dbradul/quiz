@@ -64,6 +64,7 @@ class Result(BaseModel):
     test = models.ForeignKey(to=Test, related_name='results', on_delete=models.CASCADE)
     state = models.PositiveSmallIntegerField(default=STATE.NEW, choices=STATE.choices)
     uuid = models.UUIDField(default=generate_uuid, db_index=True, unique=True)
+    current_order_number = models.PositiveSmallIntegerField(null=True)
 
     num_correct_answers = models.PositiveSmallIntegerField(
         default=0,
@@ -90,7 +91,11 @@ class Result(BaseModel):
 
         self.num_correct_answers += int(correct_answer)
         self.num_incorrect_answers += 1 - int(correct_answer)
+        self.current_order_number = order_number
         if order_number == question.test.questions_count():
             self.state = self.STATE.FINISHED
 
         self.save()
+
+    def points(self):
+        return max(0, self.num_correct_answers - self.num_incorrect_answers)

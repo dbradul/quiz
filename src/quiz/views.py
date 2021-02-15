@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic.list import MultipleObjectMixin
 
 from quiz.forms import ChoiceFormSet
 from quiz.models import Test, Result, Question
@@ -14,15 +15,27 @@ class TestListView(LoginRequiredMixin, ListView):
     context_object_name = 'tests'
 
 
-class TestDetailView(LoginRequiredMixin, DetailView):
+class TestDetailView(LoginRequiredMixin, DetailView, MultipleObjectMixin):
     model = Test
     template_name = 'tests/details.html'
     context_object_name = 'test'
     pk_url_kwarg = 'uuid'
+    paginate_by = 3
 
     def get_object(self):
         uuid = self.kwargs.get('uuid')
-        return self.get_queryset().get(uuid=uuid)
+        return self.model.objects.get(uuid=uuid)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(object_list=self.get_queryset(), **kwargs)
+        # context['result_list'] = self.get_queryset()
+        return context
+
+    def get_queryset(self):
+        return Result.objects.filter(
+            test=self.get_object(),
+            user=self.request.user
+        ).order_by('state')
 
 
 class TestResultDetailsView(LoginRequiredMixin, DetailView):
@@ -30,6 +43,7 @@ class TestResultDetailsView(LoginRequiredMixin, DetailView):
     template_name = 'results/details.html'
     context_object_name = 'result'
     pk_url_kwarg = 'uuid'
+
 
     def get_object(self):
         uuid = self.kwargs.get('result_uuid')
@@ -42,7 +56,8 @@ class TestResultCreateView(LoginRequiredMixin, CreateView):
         result = Result.objects.create(
             test=Test.objects.get(uuid=uuid),
             user=request.user,
-            state=Result.STATE.NEW
+            state=Result.STATE.NEW,
+            current_order_number=0
         )
         result.save()
 
@@ -51,13 +66,16 @@ class TestResultCreateView(LoginRequiredMixin, CreateView):
             kwargs={
                 'uuid': uuid,
                 'result_uuid': result.uuid,
-                'order_number': 1
+                # 'order_number': 1
             }
         ))
 
 class TestResultQuestionView(LoginRequiredMixin, UpdateView):
 
-    def get(self, request, uuid, result_uuid, order_number):
+    def get(self, request, uuid, result_uuid):
+
+        order_number = Result.objects.get(uuid=result_uuid).current_order_number+1
+
         question = Question.objects.get(
             test__uuid=uuid,
             order_number=order_number
@@ -74,7 +92,10 @@ class TestResultQuestionView(LoginRequiredMixin, UpdateView):
             }
         )
 
-    def post(self, request, uuid, result_uuid, order_number):
+    def post(self, request, uuid, result_uuid):
+
+        order_number = Result.objects.get(uuid=result_uuid).current_order_number+1
+
         question = Question.objects.get(
             test__uuid=uuid,
             order_number=order_number
@@ -105,6 +126,20 @@ class TestResultQuestionView(LoginRequiredMixin, UpdateView):
                 kwargs={
                     'uuid': uuid,
                     'result_uuid': result.uuid,
-                    'order_number': order_number+1
+                    # 'order_number': order_number+1
                 }
             ))
+
+class TestResultUpdateView(LoginRequiredMixin, UpdateView):
+
+    def get(self, request, uuid, result_uuid):
+        result = Result.objects.get(uuid=result_uuid)
+
+        return HttpResponseRedirect(reverse(
+            'tests:question',
+            kwargs={
+                'uuid': uuid,
+                'result_uuid': result_uuid,
+                # 'order_number': result.current_order_number+1
+            }
+        ))
