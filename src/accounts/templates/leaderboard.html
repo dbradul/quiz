@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    <h1>Leaderboard</h1>
+{% endblock %}
+
+{% block content %}
+    {% if users %}
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Image</th>
+                  <th>Full name</th>
+                  <th>Rating</th>
+{#                  <th></th>#}
+                </tr>
+            </thead>
+
+            {% for user in users %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><img class="rounded-circle p-1 m-1" width="40" height="40"  src="{{ user.image.url }}"></td>
+                    <td> {{ user.username    }}</td>
+                    <td> {{ user.rating }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <div class="p-1 m-1">
+            {% include 'includes/pagination.html' %}
+        </div>
+    {% else %}
+        <p>No users yet :(</p>
+    {% endif %}
+
+{% endblock %}

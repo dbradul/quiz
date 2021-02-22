@@ -1,14 +1,14 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 # Create your views here.
-from django.core.mail import send_mail
-from django.core.paginator import Paginator
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView, FormView
+from django.views import View
+from django.views.generic import CreateView, UpdateView
 # from django.contrib import sett
-from django.views.generic.list import MultipleObjectMixin
+from django.views.generic.list import ListView
 
 from accounts.forms import AccountCreateForm, AccountUpdateForm
 from accounts.models import User
@@ -64,3 +64,9 @@ class AccountPasswordUpdateView(LoginRequiredMixin, PasswordChangeView):
     model = User
     template_name = 'password.html'
     success_url = reverse_lazy('accounts:login')
+
+
+class LeaderboardView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'leaderboard.html'
+    context_object_name = 'users'

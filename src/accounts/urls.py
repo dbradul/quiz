@@ -5,7 +5,8 @@ from accounts.views import (
     AccountLoginView,
     AccountLogoutView,
     AccountPasswordUpdateView,
-    AccountUpdateView
+    AccountUpdateView,
+    LeaderboardView
 )
 
 app_name = 'accounts'
@@ -16,5 +17,5 @@ urlpatterns = [
     path('logout/', AccountLogoutView.as_view(), name='logout'),
     path('profile/', AccountUpdateView.as_view(), name='profile'),
     path('password/', AccountPasswordUpdateView.as_view(), name='password'),
-
+    path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
 ]
