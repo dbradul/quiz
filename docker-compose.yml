@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  backend:
+    build: ./
+#    image: dbradul/quiz
+    container_name: quiz_container
+    restart: always
+    command: ./commands/start_server.sh
+    ports:
+      - 8011:8008
+    volumes:
+      - ./src:/srv/project/src
+      - ./commands:/srv/project/commands
+
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+#    env_file:
+#      - .env
+#    depends_on:
+#      - postgresql

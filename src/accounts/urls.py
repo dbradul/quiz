@@ -6,7 +6,8 @@ from accounts.views import (
     AccountLogoutView,
     AccountPasswordUpdateView,
     AccountUpdateView,
-    LeaderboardView
+    LeaderboardView,
+    LeaderboardStatsView
 )
 
 app_name = 'accounts'
@@ -18,4 +19,5 @@ urlpatterns = [
     path('profile/', AccountUpdateView.as_view(), name='profile'),
     path('password/', AccountPasswordUpdateView.as_view(), name='password'),
     path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
+    path('statistics/', LeaderboardStatsView.as_view(), name='statistics'),
 ]

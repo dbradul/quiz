@@ -2,12 +2,9 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-# Create your views here.
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.views.generic import CreateView, UpdateView
-# from django.contrib import sett
+from django.views.generic import CreateView, UpdateView, DetailView
 from django.views.generic.list import ListView
 
 from accounts.forms import AccountCreateForm, AccountUpdateForm
@@ -70,3 +67,11 @@ class LeaderboardView(LoginRequiredMixin, ListView):
     model = User
     template_name = 'leaderboard.html'
     context_object_name = 'users'
+
+
+class LeaderboardStatsView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    permission_required = ['accounts.view_stats']
+    model = User
+
+    def get(self, request):
+        return HttpResponse('EXTENDED STATS')
