@@ -8,6 +8,7 @@ from accounts.models import User
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, created, **kwargs):
-    if created:
+    pass
+    # if created:
         # instance.groups.add(Group.objects.get(name='Users'))
-        instance.groups.add(roles.USERS)
+        # instance.groups.add(roles.USERS)

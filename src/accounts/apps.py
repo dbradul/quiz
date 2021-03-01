@@ -6,4 +6,4 @@ class AccountsConfig(AppConfig):
 
     def ready(self):
         import accounts.signals # noqa
-        import accounts.roles # noqa
+        # import accounts.roles # noqa

@@ -6,8 +6,10 @@ RUN mkdir /srv/project
 WORKDIR /srv/project
 
 COPY ./src ./src
+COPY ./commands ./commands
 COPY ./requirements.txt ./requirements.txt
 
+RUN ping google.com
 RUN pip install -r requirements.txt
 
 ENV TZ Europe/Kiev
