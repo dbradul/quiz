@@ -9,7 +9,7 @@ COPY ./src ./src
 COPY ./commands ./commands
 COPY ./requirements.txt ./requirements.txt
 
-RUN ping google.com
+RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 ENV TZ Europe/Kiev
