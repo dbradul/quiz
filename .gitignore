@@ -1,5 +1,6 @@
 env/
-.idea/
 *.pyc
 **/__pycache__/
-.env
+.*
+!.flake8
+!.env.example

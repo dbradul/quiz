@@ -9,29 +9,38 @@ services:
     restart: always
     command: ./commands/start_server.sh
     ports:
-      - "8011:8008"
+      - "${PORT}:${WSGI_PORT}"
     volumes:
       - ./src:/srv/project/src
       - ./commands:/srv/project/commands
-    environment:
-      - DB_NAME=quiz
-      - DB_USER=admin
-      - DB_HOST=postgres
-      - DB_PASSWORD=adminadmin42
-      - DB_PORT=5432
+      - static_content:/var/www/quiz
+    env_file:
+      - .env
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:12
-    environment:
-      - POSTGRES_PASSWORD=mysecretpassword
     volumes:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-#    env_file:
-#      - .env
-#    depends_on:
-#      - postgresql
+    env_file:
+      - .env
+
+  nginx:
+    image: nginx:1.19
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static_content:/var/www/quiz
+    ports:
+      - 80:80
+      - 443:443
+    env_file:
+      - .env
+    depends_on:
+      - backend
 
 volumes:
   pg_data: {}
+  static_content: {}
