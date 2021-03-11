@@ -13,7 +13,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(':')
 
 MEDIA_ROOT = '/var/www/quiz/media'
 STATIC_ROOT = '/var/www/quiz/static'
