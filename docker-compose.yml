@@ -30,8 +30,10 @@ services:
 
   nginx:
     image: nginx:1.19
+    command: /etc/nginx/start_nginx.sh
     volumes:
       - ./nginx:/etc/nginx/conf.d
+      - ./commands/start_nginx.sh:/etc/nginx/start_nginx.sh
       - static_content:/var/www/quiz
     ports:
       - 80:80
