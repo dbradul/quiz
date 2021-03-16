@@ -13,6 +13,5 @@ DATABASES = {
     }
 }
 
-
 MEDIA_ROOT = '/var/www/quiz/media'
 STATIC_ROOT = '/var/www/quiz/static'
