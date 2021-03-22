@@ -20,6 +20,8 @@ services:
       - DJANGO_SETTINGS_MODULE=app.settings.${MODE}
     depends_on:
       - postgres
+      - rabbitmq
+      - redis
 
   postgres:
     image: postgres:12
@@ -44,6 +46,60 @@ services:
       - .env
     depends_on:
       - backend
+
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+#    ports:
+#      - 8181:15672
+    env_file: .env
+    restart: always
+
+  redis:
+    image: redis
+    env_file: .env
+    restart: always
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=redis
+    ports:
+    - "8081:8081"
+
+  celery:
+    env_file: .env
+    build: .
+    command: ./commands/start_celery.sh
+    restart: always
+    depends_on:
+      - redis
+      - rabbitmq
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings.${MODE}
+    volumes:
+      - ./src:/srv/project/src
+      - ./commands:/srv/project/commands
+
+  celerybeat:
+    env_file: .env
+    build: .
+    container_name: celerybeat
+    command: ./commands/start_celerybeat.sh
+    restart: always
+    depends_on:
+      - redis
+      - celery
+      - rabbitmq
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings.${MODE}
+    volumes:
+      - ./src:/srv/project/src
+      - ./commands:/srv/project/commands
+
 
 volumes:
   pg_data: {}

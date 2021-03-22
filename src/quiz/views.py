@@ -1,3 +1,6 @@
+import datetime
+import time
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -5,8 +8,10 @@ from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.list import MultipleObjectMixin
 
+from accounts.models import User
 from quiz.forms import ChoiceFormSet
 from quiz.models import Test, Result, Question
+from quiz.tasks import mine_bitcoin, normalize_phones
 
 
 class TestListView(LoginRequiredMixin, ListView):
@@ -143,3 +148,18 @@ class TestResultUpdateView(LoginRequiredMixin, UpdateView):
                 # 'order_number': result.current_order_number+1
             }
         ))
+
+
+
+
+def bitcoin(request):
+    mine_bitcoin.delay(10)
+    mine_bitcoin.apply_async(args=(10,), eta=datetime.datetime.now() + datetime.timedelta(hours=24))
+    return HttpResponse('DONE!')
+
+
+
+def normalize(request):
+    # qs = User.objects.filter(email__endswith='.com')
+    normalize_phones.delay(filter=dict(email__endswith='.com'))
+    return HttpResponse('DONE!')
