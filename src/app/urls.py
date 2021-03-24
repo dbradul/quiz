@@ -18,8 +18,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from quiz.views import bitcoin, normalize
+
+API_PREFIX = 'api'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +30,10 @@ urlpatterns = [
 
     path('accounts/', include('accounts.urls')),
     path('quizes/', include('quiz.urls')),
+
+    path(f'{API_PREFIX}/', include('quiz.api.urls')),
+    path(f'{API_PREFIX}/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(f'{API_PREFIX}/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('bitcoin/', bitcoin),
     path('normalize/', normalize),

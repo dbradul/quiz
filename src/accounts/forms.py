@@ -28,3 +28,7 @@ class AccountUpdateForm(ModelForm):
             'birth_date',
         ]
 
+
+class ContactUs(Form):
+    subject = fields.CharField(max_length=256, empty_value='Message from Testify')
+    message = fields.CharField(widget=forms.Textarea)

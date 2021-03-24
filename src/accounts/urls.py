@@ -7,7 +7,8 @@ from accounts.views import (
     AccountPasswordUpdateView,
     AccountUpdateView,
     LeaderboardView,
-    LeaderboardStatsView
+    LeaderboardStatsView,
+    ContactUsView
 )
 
 app_name = 'accounts'
@@ -20,4 +21,5 @@ urlpatterns = [
     path('password/', AccountPasswordUpdateView.as_view(), name='password'),
     path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
     path('statistics/', LeaderboardStatsView.as_view(), name='statistics'),
+    path('contact_us/', ContactUsView.as_view(), name='contact_us'),
 ]

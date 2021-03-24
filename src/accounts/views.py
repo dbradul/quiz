@@ -1,13 +1,15 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, UpdateView, DetailView
+from django.views.generic import CreateView, UpdateView, DetailView, FormView
 from django.views.generic.list import ListView
 
-from accounts.forms import AccountCreateForm, AccountUpdateForm
+from accounts.forms import AccountCreateForm, AccountUpdateForm, ContactUs
 from accounts.models import User
 
 
@@ -75,3 +77,24 @@ class LeaderboardStatsView(PermissionRequiredMixin, LoginRequiredMixin, DetailVi
 
     def get(self, request):
         return HttpResponse('EXTENDED STATS')
+
+
+class ContactUsView(LoginRequiredMixin, FormView):
+    template_name = 'contact_us.html'
+    success_url = reverse_lazy('index')
+    form_class = ContactUs
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            send_mail(
+                subject=form.cleaned_data['subject'],
+                message=form.cleaned_data['message'],
+                from_email=request.user.email,
+                recipient_list=settings.EMAIL_HOST_RECIPIENT.split(':'),
+                fail_silently=False,
+            )
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
