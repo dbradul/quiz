@@ -71,9 +71,9 @@ class TestResultCreateView(LoginRequiredMixin, CreateView):
             kwargs={
                 'uuid': uuid,
                 'result_uuid': result.uuid,
-                # 'order_number': 1
             }
         ))
+
 
 class TestResultQuestionView(LoginRequiredMixin, UpdateView):
 
@@ -101,21 +101,18 @@ class TestResultQuestionView(LoginRequiredMixin, UpdateView):
 
         order_number = Result.objects.get(uuid=result_uuid).current_order_number+1
 
-        question = Question.objects.get(
-            test__uuid=uuid,
-            order_number=order_number
-        )
-
         choices = ChoiceFormSet(data=request.POST)
+
         selected_choices = [
-            'is_selected' in form.changed_data
+            form.cleaned_data.get('id').id
             for form in choices.forms
+            if form.cleaned_data.get('is_selected')
         ]
 
         result = Result.objects.get(
             uuid=result_uuid
         )
-        result.update_result(order_number, question, selected_choices)
+        result.update_result(order_number, selected_choices)
 
         if result.state == Result.STATE.FINISHED:
             return HttpResponseRedirect(reverse(
@@ -130,8 +127,7 @@ class TestResultQuestionView(LoginRequiredMixin, UpdateView):
                 'tests:question',
                 kwargs={
                     'uuid': uuid,
-                    'result_uuid': result.uuid,
-                    # 'order_number': order_number+1
+                    'result_uuid': result.uuid
                 }
             ))
 
@@ -148,7 +144,6 @@ class TestResultUpdateView(LoginRequiredMixin, UpdateView):
                 # 'order_number': result.current_order_number+1
             }
         ))
-
 
 
 

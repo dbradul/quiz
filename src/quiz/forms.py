@@ -39,7 +39,13 @@ class ChoiceForm(ModelForm):
 
     class Meta:
         model = Choice
-        fields = ['text']
+        fields = ['id', 'text']
+        # widgets = {
+        #     'id': forms.HiddenInput(),
+        # }
+
+    # def __init__(self, *args, **kwargs):
+    #     pass
 
 ChoiceFormSet = modelformset_factory(
     model=Choice,

@@ -22,7 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from quiz.views import bitcoin, normalize
 
-API_PREFIX = 'api'
+API_PREFIX = 'api/v1'
 
 urlpatterns = [
     path('admin/', admin.site.urls),

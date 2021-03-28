@@ -79,15 +79,13 @@ class Result(BaseModel):
         ]
     )
 
-    def update_result(self, order_number, question, selected_choices):
-        correct_choices = [
-            choice.is_correct
-            for choice in question.choices.all()
-        ]
+    def update_result(self, order_number, selected_choices):
+        question = Question.objects.filter(test=self.test, order_number=order_number).first()
+        choices = [q.id for q in question.choices.filter(is_correct=True)]
 
-        correct_answer = True
-        for x, y in zip(correct_choices, selected_choices):
-            correct_answer &= (x == y)
+        choices.sort()
+        selected_choices.sort()
+        correct_answer = (choices == selected_choices)
 
         self.num_correct_answers += int(correct_answer)
         self.num_incorrect_answers += 1 - int(correct_answer)

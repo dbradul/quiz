@@ -13,6 +13,6 @@ urlpatterns = [
     path('<uuid:uuid>/results/create', TestResultCreateView.as_view(), name='result_create'),
     path('<uuid:uuid>/results/<uuid:result_uuid>/details', TestResultDetailsView.as_view(), name='result_details'),
     path('<uuid:uuid>/results/<uuid:result_uuid>/update', TestResultUpdateView.as_view(), name='result_update'),
-    path('<uuid:uuid>/results/<uuid:result_uuid>/delete', TestResultUpdateView.as_view(), name='result_update'),
+    path('<uuid:uuid>/results/<uuid:result_uuid>/delete', TestResultUpdateView.as_view(), name='result_delete'),
     path('<uuid:uuid>/results/<uuid:result_uuid>/questions/next', TestResultQuestionView.as_view(), name='question'),
 ]
