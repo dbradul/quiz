@@ -93,6 +93,9 @@ class Result(BaseModel):
         if order_number == question.test.questions_count():
             self.state = self.STATE.FINISHED
 
+            self.user.rating += self.points()
+            self.user.save()
+
         self.save()
 
     def points(self):
