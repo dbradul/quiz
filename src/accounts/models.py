@@ -11,6 +11,7 @@ class User(AbstractUser):
     birth_date = models.DateField(null=True, blank=True)
     rating = models.PositiveSmallIntegerField(null=True, default=0, validators=[MaxValueValidator(100)])
     image = models.ImageField(null=True, default='default.jpg', upload_to='pics')
+    tg_auth_token = models.UUIDField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         print(self.full_clean())

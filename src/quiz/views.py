@@ -37,10 +37,7 @@ class TestDetailView(LoginRequiredMixin, DetailView, MultipleObjectMixin):
         return context
 
     def get_queryset(self):
-        return Result.objects.filter(
-            test=self.get_object(),
-            user=self.request.user
-        ).order_by('state')
+        return Result.objects.filter(test=self.get_object(), user=self.request.user).order_by('state')
 
 
 class TestResultDetailsView(LoginRequiredMixin, DetailView):
@@ -49,14 +46,12 @@ class TestResultDetailsView(LoginRequiredMixin, DetailView):
     context_object_name = 'result'
     pk_url_kwarg = 'uuid'
 
-
     def get_object(self):
         uuid = self.kwargs.get('result_uuid')
         return self.get_queryset().get(uuid=uuid)
 
 
 class TestResultCreateView(LoginRequiredMixin, CreateView):
-
     def post(self, request, uuid):
         result = Result.objects.create(
             test=Test.objects.get(uuid=uuid),
@@ -123,28 +118,23 @@ class TestResultQuestionView(LoginRequiredMixin, UpdateView):
                 }
             ))
         else:
-            return HttpResponseRedirect(reverse(
-                'tests:question',
-                kwargs={
-                    'uuid': uuid,
-                    'result_uuid': result.uuid
-                }
-            ))
+            return HttpResponseRedirect(reverse('tests:question', kwargs={'uuid': uuid, 'result_uuid': result.uuid}))
+
 
 class TestResultUpdateView(LoginRequiredMixin, UpdateView):
-
     def get(self, request, uuid, result_uuid):
         result = Result.objects.get(uuid=result_uuid)
 
-        return HttpResponseRedirect(reverse(
-            'tests:question',
-            kwargs={
-                'uuid': uuid,
-                'result_uuid': result_uuid,
-                # 'order_number': result.current_order_number+1
-            }
-        ))
-
+        return HttpResponseRedirect(
+            reverse(
+                'tests:question',
+                kwargs={
+                    'uuid': uuid,
+                    'result_uuid': result_uuid,
+                    # 'order_number': result.current_order_number+1
+                },
+            )
+        )
 
 
 def bitcoin(request):

@@ -1,3 +1,7 @@
+#!make
+include .env
+
+
 start:
 	docker-compose up
 
@@ -22,8 +26,11 @@ top:
 collect:
 	docker-compose exec backend python src/manage.py collectstatic --settings=app.settings.prod
 
-shell:
+shellc:
 	docker-compose exec backend python src/manage.py shell_plus --print-sql
 
-export:
+shell:
+	python src/manage.py shell_plus --print-sql --settings=app.settings.dev
+
+expr:
 	export $(cat .env | sed 's/#.*//g' | xargs)

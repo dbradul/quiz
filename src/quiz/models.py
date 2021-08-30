@@ -62,7 +62,7 @@ class Result(BaseModel):
 
     user = models.ForeignKey(to=User, related_name='results', on_delete=models.CASCADE)
     test = models.ForeignKey(to=Test, related_name='results', on_delete=models.CASCADE)
-    state = models.PositiveSmallIntegerField(default=STATE.NEW, choices=STATE.choices)
+    state = models.PositiveSmallIntegerField(default=STATE.NEW, choices=STATE.choices) # TODO: derive from current_order_number
     uuid = models.UUIDField(default=generate_uuid, db_index=True, unique=True)
     current_order_number = models.PositiveSmallIntegerField(null=True)
 
@@ -83,16 +83,14 @@ class Result(BaseModel):
         question = Question.objects.filter(test=self.test, order_number=order_number).first()
         choices = [q.id for q in question.choices.filter(is_correct=True)]
 
-        choices.sort()
-        selected_choices.sort()
-        correct_answer = (choices == selected_choices)
+        correct_answer = choices.sort() == selected_choices.sort()
 
         self.num_correct_answers += int(correct_answer)
         self.num_incorrect_answers += 1 - int(correct_answer)
         self.current_order_number = order_number
+
         if order_number == question.test.questions_count():
             self.state = self.STATE.FINISHED
-
             self.user.rating += self.points()
             self.user.save()
 

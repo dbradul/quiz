@@ -1,5 +1,6 @@
-from django.contrib.auth.models import Group
-from django.db.models.signals import post_save, pre_delete, post_delete
+import uuid
+
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from accounts.models import User
@@ -10,3 +11,5 @@ def save_profile(sender, instance, created, **kwargs):
     from accounts import roles
     if created:
         instance.groups.add(roles.USERS)
+        instance.tg_auth_token = uuid.uuid4()
+        instance.save()

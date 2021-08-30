@@ -1,15 +1,32 @@
+import json
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse_lazy
 from rest_framework import generics
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import AccessToken
 
 from accounts.models import User
-from quiz.api.serializers import TestSerializer, UserSerializer, ResultSerializer, QuestionSerializer, ChoiceSerializer
+from quiz.api.serializers import (
+    TestSerializer,
+    UserSerializer,
+    ResultSerializer,
+    QuestionSerializer,
+    ChoiceSerializer,
+    TestDetailSerializer,
+    QuestionDetailSerializer,
+)
 from quiz.models import Test, Result, Question, Choice
 
 
 class TestListView(generics.ListAPIView):
-    authentication_classes = []
-    permission_classes = []
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = []
+    # permission_classes = []
     queryset = Test.objects.all()
     serializer_class = TestSerializer
 
@@ -17,29 +34,26 @@ class TestListView(generics.ListAPIView):
 # class TestUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 # class TestUpdateDeleteView(generics.RetrieveUpdateAPIView):
 class TestDetailView(generics.RetrieveAPIView):
+    authentication_classes = []
+    permission_classes = []
     queryset = Test.objects.all()
-    serializer_class = TestSerializer
+    serializer_class = TestDetailSerializer
 
 
 class ResultListCreateView(generics.ListCreateAPIView):
-    authentication_classes = []
-    permission_classes = []
     queryset = Result.objects.all()
     serializer_class = ResultSerializer
+    pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
         test_id = self.kwargs['pk']
         serializer.save(
-            test=Test.objects.get(id = test_id),
-            user_id=1, #self.request.user,
-            state=Result.STATE.NEW,
-            current_order_number=1
+            test=Test.objects.get(id=test_id),
+            user=self.request.user,
         )
 
 
 class QuestionListView(generics.ListAPIView):
-    authentication_classes = []
-    permission_classes = []
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
@@ -50,8 +64,6 @@ class QuestionListView(generics.ListAPIView):
 
 
 class ChoiceListView(generics.ListAPIView):
-    authentication_classes = []
-    permission_classes = []
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
 
@@ -62,17 +74,13 @@ class ChoiceListView(generics.ListAPIView):
 
 
 class ChoiceRetrieveView(generics.RetrieveAPIView):
-    authentication_classes = []
-    permission_classes = []
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
 
 
 class QuestionDetailView(generics.RetrieveAPIView):
-    authentication_classes = []
-    permission_classes = []
     queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+    serializer_class = QuestionDetailSerializer
 
     def get_object(self):
         print('get_queryset')
@@ -82,30 +90,35 @@ class QuestionDetailView(generics.RetrieveAPIView):
         return object
 
 
-class ResultUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
-    authentication_classes = []
-    permission_classes = []
+class QuestionDetailViewNaive(generics.RetrieveAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionDetailSerializer
+
+
+class ResultUpdateDeleteView(generics.RetrieveUpdateAPIView):
     queryset = Result.objects.all()
     serializer_class = ResultSerializer
-    # lookup_url_kwarg = 'id'
-
-    # def get_object(self):
-    #     # test_id = self.kwargs['pk']
-    #     # test_result_id = self.kwargs['id']
-    #     # return Result.objects.get(test__id=test_id, id=test_result_id)
-    #     return Result.objects.get(id=self.kwargs['pk'])
-
-    def perform_update(self, serializer):
-        super().perform_update(serializer)
-        if 'choice_id' in serializer.initial_data:
-            serializer.instance.update_result(
-                order_number=int(serializer.initial_data.get('current_order_number')),
-                selected_choices=[int(serializer.initial_data.get('choice_id'))]
-            )
 
 
 class UserListView(generics.ListCreateAPIView):
-    authentication_classes = []
-    permission_classes = []
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def tg_auth(request, auth_token):
+    user = User.objects.filter(tg_auth_token=auth_token).first()
+    if user:
+        jwt_token = str((AccessToken.for_user(user)))
+        response, status = json.dumps({'jwt_token': jwt_token, 'username': user.username}), 200
+    else:
+        response, status = json.dumps({'error': 'No information available for the given token'}), 404
+    return HttpResponse(content=response, status=status)
+
+
+@permission_classes([IsAuthenticated])
+@login_required(login_url=reverse_lazy('accounts:login'))
+def tg_introduce(request):
+    return HttpResponseRedirect(f"https://t.me/hillel_quiz_bot?start={request.user.tg_auth_token}")
