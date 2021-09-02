@@ -4,3 +4,4 @@ env/
 .*
 !.flake8
 !.env.example
+/coverage_html/

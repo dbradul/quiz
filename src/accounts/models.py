@@ -13,6 +13,6 @@ class User(AbstractUser):
     image = models.ImageField(null=True, default='default.jpg', upload_to='pics')
     tg_auth_token = models.UUIDField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        print(self.full_clean())
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     print(self.full_clean())
+    #     super().save(*args, **kwargs)

@@ -34,8 +34,8 @@ class TestListView(generics.ListAPIView):
 # class TestUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 # class TestUpdateDeleteView(generics.RetrieveUpdateAPIView):
 class TestDetailView(generics.RetrieveAPIView):
-    authentication_classes = []
-    permission_classes = []
+    # authentication_classes = []
+    # permission_classes = []
     queryset = Test.objects.all()
     serializer_class = TestDetailSerializer
 
